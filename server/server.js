@@ -11,17 +11,19 @@ var io = socketIO(server);          // websocket server - server to client
 
 app.use(express.static(publicPath));
 
+// socket. -> emits to a single connection
+// io -> emits to all connections
+
 io.on('connection', (socket) => {
     console.log('New user connected');
 
-    socket.emit('newMessage', {
-        from: 'adde@mail.com',
-        text: 'Hey, its me lets ut lunch',
-        createdAt: '17:15'
-    });
-
     socket.on('createMessage', (message) => {
-        console.log('Createmessage', message);
+        console.log('CreateMessage', message);
+        io.emit('newMessage', {
+            from: message.from,
+            text: message.text,
+            createdAt: new Date().getTime()
+        }); 
     });
 
     socket.on('disconnect', () => {
